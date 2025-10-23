@@ -1,0 +1,294 @@
+// Prisma Schema for Short Drama App
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 剧集主表
+model Drama {
+  id                  String   @id @default(cuid())
+  originalId          String   @unique
+  title               String
+  focus               String
+  description         String   @db.Text
+  channelName         String
+  copyrightAuthorize  String?
+  hPoster             String
+  vPoster             String
+
+  // 模拟数据字段
+  views               Int      @default(0)
+  likes               Int      @default(0)
+  rating              Float    @default(8.0)
+  isCompleted         Boolean  @default(true)
+  totalEpisodes       Int      @default(10)
+  isVip               Boolean  @default(false)  // VIP专属标记
+
+  // 关联关系
+  episodes            Episode[]
+  tags                DramaTag[]
+  actors              DramaActor[]
+  directors           DramaDirector[]
+  comments            Comment[]
+  favorites           Favorite[]
+  watchHistories      WatchHistory[]
+  dramaLikes          DramaLike[]
+  aiCharacters        AICharacter[]
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([title])
+  @@index([channelName])
+  @@index([views])
+  @@index([createdAt])
+}
+
+// 剧集表
+model Episode {
+  id          String   @id @default(cuid())
+  originalId  String   @unique
+  dramaId     String
+  drama       Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  title       String
+  playOrder   Int
+  playSetting String   @db.Text
+
+  createdAt   DateTime @default(now())
+
+  @@unique([dramaId, playOrder])
+  @@index([dramaId])
+}
+
+// 标签表
+model Tag {
+  id      String     @id @default(cuid())
+  name    String     @unique
+  dramas  DramaTag[]
+}
+
+// 剧集-标签关联表
+model DramaTag {
+  drama    Drama  @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  dramaId  String
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId    String
+
+  @@id([dramaId, tagId])
+}
+
+// 演员表
+model Actor {
+  id      String       @id @default(cuid())
+  name    String       @unique
+  dramas  DramaActor[]
+}
+
+// 剧集-演员关联表
+model DramaActor {
+  drama    Drama  @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  dramaId  String
+  actor    Actor  @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  actorId  String
+
+  @@id([dramaId, actorId])
+}
+
+// 导演表
+model Director {
+  id      String          @id @default(cuid())
+  name    String          @unique
+  dramas  DramaDirector[]
+}
+
+// 剧集-导演关联表
+model DramaDirector {
+  drama      Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  dramaId    String
+  director   Director @relation(fields: [directorId], references: [id], onDelete: Cascade)
+  directorId String
+
+  @@id([dramaId, directorId])
+}
+
+// 用户表
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  password       String
+  name           String?
+  avatar         String?
+  
+  // VIP相关字段
+  isVip          Boolean         @default(false)
+  vipExpireAt    DateTime?       // VIP到期时间
+
+  comments       Comment[]
+  favorites      Favorite[]
+  watchHistories WatchHistory[]
+  likes          Like[]
+  dramaLikes     DramaLike[]
+  conversations  Conversation[]
+
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+// 评论表
+model Comment {
+  id        String    @id @default(cuid())
+  content   String    @db.Text
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dramaId   String
+  drama     Drama     @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+
+  likes     Like[]
+  likeCount Int       @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([dramaId])
+  @@index([userId])
+}
+
+// 收藏表
+model Favorite {
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  drama     Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  dramaId   String
+
+  createdAt DateTime @default(now())
+
+  @@id([userId, dramaId])
+}
+
+// 观看历史表
+model WatchHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dramaId     String
+  drama       Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  episodeId   String
+  progress    Int      @default(0) // 播放进度（秒）
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, episodeId])
+  @@index([userId, updatedAt])
+}
+
+// 评论点赞表
+model Like {
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+
+  createdAt DateTime @default(now())
+
+  @@id([userId, commentId])
+}
+
+// 剧集点赞表
+model DramaLike {
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  drama     Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  dramaId   String
+
+  createdAt DateTime @default(now())
+
+  @@id([userId, dramaId])
+  @@index([dramaId])
+}
+
+// 用户行为日志表
+model UserBehavior {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // 'view', 'search', 'play', 'like', etc.
+  target    String   // 目标ID
+  metadata  Json?    // 额外数据
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// AI角色表
+model AICharacter {
+  id              String   @id @default(cuid())
+  name            String   // 角色名称
+  avatar          String?  // 角色头像
+  personality     String   @db.Text // 性格描述
+  background      String   @db.Text // 背景故事
+  speakingStyle   String   @db.Text // 说话风格
+  catchphrases    String[] // 口头禅
+  occupation      String?  // 职业
+  age             Int?     // 年龄
+  gender          String?  // 性别
+  
+  // 关联剧集（可选）
+  dramaId         String?
+  drama           Drama?   @relation(fields: [dramaId], references: [id])
+  
+  // 系统提示词（用于AI）
+  systemPrompt    String   @db.Text
+  
+  isActive        Boolean  @default(true)
+  
+  conversations   Conversation[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([dramaId])
+}
+
+// 对话会话表
+model Conversation {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  characterId   String
+  character     AICharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  
+  messages      Message[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([characterId])
+  @@index([updatedAt])
+}
+
+// 消息表
+model Message {
+  id              String   @id @default(cuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  role            String   // 'user' or 'assistant'
+  content         String   @db.Text
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([conversationId])
+  @@index([createdAt])
+}

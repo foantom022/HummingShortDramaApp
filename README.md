@@ -1,189 +1,210 @@
-# 短剧APP - 小米AI编程大赛作品
+แอปละครสั้น (Short Drama APP) – ผลงานประกวด Xiaomi AI Programming Contest
 
-一个基于Next.js 14开发的沉浸式短剧播放Web应用，支持全屏播放、滑动切换、智能搜索等功能。
+เว็บแอปสำหรับรับชมละครสั้นแบบสมจริง พัฒนาด้วย Next.js 14 รองรับการเล่นแบบเต็มหน้าจอ การปัดเพื่อเปลี่ยนเรื่อง การค้นหาอัจฉริยะ และฟีเจอร์อื่น ๆ
 
-## 🚀 技术栈
+🚀 เทคโนโลยีที่ใช้
 
-- **框架**: Next.js 14 (App Router)
-- **语言**: TypeScript 5
-- **样式**: Tailwind CSS 4 + shadcn/ui
-- **数据库**: PostgreSQL + Prisma ORM
-- **认证**: NextAuth.js
-- **视频**: Video.js
-- **状态管理**: Zustand + SWR
-- **部署**: Vercel
+เฟรมเวิร์ก: Next.js 14 (App Router)
 
-## 📁 项目结构
+ภาษา: TypeScript 5
 
-```
+สไตล์: Tailwind CSS 4 + shadcn/ui
+
+ฐานข้อมูล: PostgreSQL + Prisma ORM
+
+ระบบยืนยันตัวตน: NextAuth.js
+
+วิดีโอ: Video.js
+
+การจัดการสถานะ: Zustand + SWR
+
+การปรับใช้ (Deploy): Vercel
+
+📁 โครงสร้างโปรเจกต์
 short-drama-app/
 ├── app/                    # Next.js App Router
-│   ├── api/               # API路由
-│   └── (pages)/           # 页面组件
-├── components/            # React组件
-│   ├── ui/               # shadcn/ui基础组件
-│   ├── video/            # 视频播放器组件
-│   ├── drama/            # 剧集相关组件
-│   └── search/           # 搜索组件
-├── lib/                   # 工具库
-│   ├── prisma.ts         # Prisma客户端
-│   ├── video-service.ts  # 视频签名服务
-│   └── utils.ts          # 工具函数
-├── hooks/                 # 自定义Hooks
-├── store/                 # Zustand状态管理
-├── types/                 # TypeScript类型定义
-├── prisma/               # 数据库Schema
-├── scripts/              # 脚本文件
-└── code-gen-record/      # AI编程记录
-```
+│   ├── api/               # เส้นทาง API
+│   └── (pages)/           # คอมโพเนนต์หน้าเว็บ
+├── components/            # React Components
+│   ├── ui/               # คอมโพเนนต์พื้นฐานจาก shadcn/ui
+│   ├── video/            # คอมโพเนนต์เครื่องเล่นวิดีโอ
+│   ├── drama/            # คอมโพเนนต์เกี่ยวกับละคร
+│   └── search/           # คอมโพเนนต์ค้นหา
+├── lib/                   # ไลบรารีเครื่องมือ
+│   ├── prisma.ts         # Prisma Client
+│   ├── video-service.ts  # บริการเซ็นชื่อวิดีโอ
+│   └── utils.ts          # ฟังก์ชันอรรถประโยชน์
+├── hooks/                 # Custom Hooks
+├── store/                 # การจัดการสถานะด้วย Zustand
+├── types/                 # นิยาม TypeScript
+├── prisma/               # Schema ฐานข้อมูล
+├── scripts/              # ไฟล์สคริปต์
+└── code-gen-record/      # บันทึกการเขียนโค้ดด้วย AI
 
-## 🛠️ 本地开发
+🛠️ การพัฒนาในเครื่อง (Local Development)
+ความต้องการของระบบ
 
-### 环境要求
+Node.js 18+
 
-- Node.js 18+
-- PostgreSQL 15+
-- npm 或 yarn
+PostgreSQL 15+
 
-### 安装步骤
+npm หรือ yarn
 
-1. **克隆项目**
-```bash
+ขั้นตอนการติดตั้ง
+
+โคลนโปรเจกต์
+
 git clone <your-repo-url>
 cd short-drama-app
-```
 
-2. **安装依赖**
-```bash
+
+ติดตั้ง Dependencies
+
 npm install
-```
 
-3. **配置环境变量**
-```bash
+
+ตั้งค่า Environment Variables
+
 cp .env.example .env.local
-```
 
-编辑 `.env.local` 文件，配置数据库连接和CDN密钥：
-```env
+
+แก้ไขไฟล์ .env.local เพื่อกำหนดค่าการเชื่อมต่อฐานข้อมูลและ CDN:
+
 DATABASE_URL="postgresql://user:password@localhost:5432/shortdrama"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-key"
 CDN_KEY="your-cdn-key"
-```
 
-4. **初始化数据库**
-```bash
-# 生成Prisma客户端
+
+ตั้งค่าฐานข้อมูลเริ่มต้น
+
+# สร้าง Prisma Client
 npm run db:generate
 
-# 推送数据库Schema
+# อัปเดต Schema ไปยังฐานข้อมูล
 npm run db:push
-```
 
-5. **导入数据**
-```bash
-# 确保data.json在项目根目录的上一级
+
+นำเข้าข้อมูล
+
+# ตรวจสอบให้แน่ใจว่า data.json อยู่ในโฟลเดอร์ระดับบนของโปรเจกต์
 npm run import:data
-```
 
-6. **启动开发服务器**
-```bash
+
+เริ่มเซิร์ฟเวอร์สำหรับพัฒนา
+
 npm run dev
-```
 
-访问 http://localhost:3000
 
-## 📦 构建部署
+เข้าใช้งานที่ http://localhost:3000
 
-### 本地构建
-
-```bash
+📦 การ Build และ Deploy
+Build ในเครื่อง
 npm run build
 npm start
-```
 
-### Vercel部署
+Deploy ด้วย Vercel
 
-1. 推送代码到GitHub
-2. 在Vercel导入项目
-3. 配置环境变量
-4. 自动部署
+Push โค้ดขึ้น GitHub
 
-### Docker部署
+นำเข้าโปรเจกต์ใน Vercel
 
-```bash
+ตั้งค่า Environment Variables
+
+ระบบจะ Deploy ให้อัตโนมัติ
+
+Deploy ด้วย Docker
 docker build -t short-drama-app .
 docker run -p 3000:3000 short-drama-app
-```
 
-## 🎯 核心功能
+🎯 ฟีเจอร์หลัก
+✅ ฝั่ง Backend (เสร็จสมบูรณ์ 100%)
 
-### ✅ 后端已完成（100%）
+ โครงสร้างพื้นฐานของโปรเจกต์
 
-- [x] 项目基础架构
-- [x] 数据库Schema设计（15个表）
-- [x] 视频URL签名算法
-- [x] 数据导入（1,024部剧集）
-- [x] 用户认证系统（注册、登录、JWT）
-- [x] 剧集管理API（列表、详情、筛选、排序）
-- [x] 搜索功能（实时搜索、联想）
-- [x] 互动功能（点赞、评论、收藏）
-- [x] 个人中心（观看历史、收藏列表）
-- [x] VIP系统（307部VIP剧集）
-- [x] 信息流API（类抖音模式）
-- [x] AI Chatbot（角色扮演）
-- [x] 用户行为追踪
-- [x] 管理员后台API
+ ออกแบบ Schema ฐานข้อมูล (15 ตาราง)
 
-**API接口总数：28个**
+ อัลกอริทึมเซ็น URL วิดีโอ
 
-### 🚧 前端开发中
+ นำเข้าข้อมูล (ละคร 1,024 เรื่อง)
 
-- [ ] 主页（搜索栏、推荐、分类列表）
-- [ ] 信息流页（全屏视频、滑动切换）
-- [ ] AI Chatbot页（角色对话）
-- [ ] VIP专属区
-- [ ] 个人中心页
-- [ ] 视频播放器组件
+ ระบบยืนยันตัวตนผู้ใช้ (สมัคร, เข้าสู่ระบบ, JWT)
 
-## 📊 数据库命令
+ API จัดการละคร (รายการ, รายละเอียด, กรอง, เรียงลำดับ)
 
-```bash
-# 生成Prisma客户端
+ ระบบค้นหา (ค้นหาแบบเรียลไทม์, คำแนะนำ)
+
+ ฟีเจอร์โต้ตอบ (ไลก์, คอมเมนต์, บันทึก)
+
+ โปรไฟล์ผู้ใช้ (ประวัติการรับชม, รายการโปรด)
+
+ ระบบ VIP (ละคร VIP 307 เรื่อง)
+
+ API ฟีดข้อมูล (รูปแบบคล้าย TikTok)
+
+ AI Chatbot (สวมบทบาทตัวละคร)
+
+ การติดตามพฤติกรรมผู้ใช้
+
+ API สำหรับผู้ดูแลระบบ
+
+จำนวน API ทั้งหมด: 28 รายการ
+
+🚧 ฝั่ง Frontend (กำลังพัฒนา)
+
+ หน้าแรก (แถบค้นหา, แนะนำ, หมวดหมู่)
+
+ หน้าฟีด (วิดีโอเต็มจอ, ปัดเปลี่ยน)
+
+ หน้า AI Chatbot (สนทนากับตัวละคร)
+
+ โซน VIP
+
+ หน้าโปรไฟล์ผู้ใช้
+
+ คอมโพเนนต์เครื่องเล่นวิดีโอ
+
+📊 คำสั่งจัดการฐานข้อมูล
+# สร้าง Prisma Client
 npm run db:generate
 
-# 推送Schema到数据库
+# Push Schema ไปยังฐานข้อมูล
 npm run db:push
 
-# 创建迁移
+# สร้าง Migration
 npm run db:migrate
 
-# 打开Prisma Studio
+# เปิด Prisma Studio
 npm run db:studio
-```
 
-## 🤖 AI编程记录
+🤖 บันทึกการเขียนโค้ดด้วย AI
 
-本项目大量使用AI辅助开发，详细记录见 `code-gen-record/` 目录。
+โปรเจกต์นี้ใช้ AI ช่วยพัฒนาเป็นจำนวนมาก รายละเอียดอยู่ในโฟลเดอร์ code-gen-record/
 
-## 📝 开发规范
+📝 มาตรฐานการพัฒนา
 
-- 使用TypeScript严格模式
-- 遵循ESLint规则
-- 组件使用函数式编程
-- API路由使用RESTful规范
+ใช้ TypeScript โหมด Strict
 
-## 🔗 相关链接
+ปฏิบัติตามกฎของ ESLint
 
-- [Next.js文档](https://nextjs.org/docs)
-- [Prisma文档](https://www.prisma.io/docs)
-- [shadcn/ui](https://ui.shadcn.com)
-- [Video.js](https://videojs.com)
+ใช้ Functional Components
 
-## 📄 License
+API ออกแบบตามมาตรฐาน RESTful
+
+🔗 ลิงก์ที่เกี่ยวข้อง
+
+เอกสาร Next.js
+
+เอกสาร Prisma
+
+shadcn/ui
+
+Video.js
+
+📄 ใบอนุญาต (License)
 
 MIT
 
-## 👥 团队
+👥 ทีมงาน
 
-小米AI编程大赛参赛作品
+ผลงานที่ส่งเข้าประกวด Xiaomi AI Programming Contest
